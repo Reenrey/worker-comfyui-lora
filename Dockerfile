@@ -146,3 +146,9 @@ FROM base AS final
 
 # Copy models from stage 2 to the final image
 COPY --from=downloader /comfyui/models /comfyui/models
+# Bake LoRA into the image
+RUN mkdir -p /workspace/ComfyUI/models/loras && \
+    mkdir -p /comfyui/ComfyUI/models/loras || true
+
+COPY ./loras/my_first_lora_v2_000001750.safetensors /workspace/ComfyUI/models/loras/my_first_lora_v2_000001750.safetensors
+COPY ./loras/my_first_lora_v2_000001750.safetensors /comfyui/ComfyUI/models/loras/my_first_lora_v2_000001750.safetensors
