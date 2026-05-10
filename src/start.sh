@@ -56,8 +56,10 @@ if [ "$GPU_OK" -ne 1 ]; then
     echo "worker-comfyui: GPU is not available after 3 attempts. PyTorch CUDA init failed:"
     echo "worker-comfyui: $GPU_CHECK"
     echo "worker-comfyui: Please retry later or contact Runpod support and report this machine."
-    exit 1
+    echo "worker-comfyui: DEBUG: keeping container alive for investigation"
+    sleep infinity
 fi
+
 
 echo "worker-comfyui: GPU available — $GPU_CHECK"
 
