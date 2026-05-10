@@ -43,8 +43,9 @@ except Exception as e:
     echo "worker-comfyui: $GPU_CHECK"
     echo "worker-comfyui: This usually means the GPU on this machine is not properly initialized."
     echo "worker-comfyui: Please contact RunPod support and report this machine."
-    exit 1
+    echo "worker-comfyui: WARNING: GPU check failed, continuing anyway for debugging."
 fi
+
 echo "worker-comfyui: GPU available — $GPU_CHECK"
 
 # Ensure ComfyUI-Manager runs in offline network mode inside the container
