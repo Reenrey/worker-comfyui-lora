@@ -29,7 +29,13 @@ export LD_PRELOAD="${TCMALLOC}"
 # so we fail fast with an actionable error message.
 # ---------------------------------------------------------------------------
 echo "worker-comfyui: Checking GPU availability..."
-if ! GPU_CHECK=$(python3 -c "
+
+GPU_OK=0
+GPU_CHECK=""
+
+for i in 1 2 3; do
+    echo "worker-comfyui: GPU check attempt $i/3..."
+    if GPU_CHECK=$(python3 -c "
 import torch
 try:
     torch.cuda.init()
@@ -37,16 +43,24 @@ try:
     print(f'OK: {name}')
 except Exception as e:
     print(f'FAIL: {e}')
-    exit(1)
+    raise SystemExit(1)
 " 2>&1); then
-    echo "worker-comfyui: GPU is not available. PyTorch CUDA init failed:"
+        GPU_OK=1
+        break
+    fi
+    echo "worker-comfyui: GPU check failed: $GPU_CHECK"
+    sleep 8
+done
+
+if [ "$GPU_OK" -ne 1 ]; then
+    echo "worker-comfyui: GPU is not available after 3 attempts. PyTorch CUDA init failed:"
     echo "worker-comfyui: $GPU_CHECK"
-    echo "worker-comfyui: This usually means the GPU on this machine is not properly initialized."
-    echo "worker-comfyui: Please contact RunPod support and report this machine."
-    echo "worker-comfyui: WARNING: GPU check failed, continuing anyway for debugging."
+    echo "worker-comfyui: Please retry later or contact Runpod support and report this machine."
+    exit 1
 fi
 
 echo "worker-comfyui: GPU available — $GPU_CHECK"
+
 
 # Ensure ComfyUI-Manager runs in offline network mode inside the container
 comfy-manager-set-mode offline || echo "worker-comfyui - Could not set ComfyUI-Manager network_mode" >&2
