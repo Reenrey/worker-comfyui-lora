@@ -57,7 +57,7 @@ if [ "$GPU_OK" -ne 1 ]; then
     echo "worker-comfyui: $GPU_CHECK"
     echo "worker-comfyui: Please retry later or contact Runpod support and report this machine."
     echo "worker-comfyui: DEBUG: keeping container alive for investigation"
-    sleep infinity
+    exit 1
 fi
 
 
